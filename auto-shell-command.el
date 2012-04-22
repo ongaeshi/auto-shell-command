@@ -3,7 +3,7 @@
 ;; Copyright (C) 2012 ongaeshi
 
 ;; Author: ongaeshi
-;; Keywords: shell, auto, async
+;; Keywords: shell, save, async, deferred
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -27,22 +27,37 @@
 (eval-when-compile (require 'cl))
 (require 'deferred)
 
-;;; Code:
+;;; Parameter:
 
-; 後でdeferredへの依存を無くす？
-(defun auto-shell-command:shell-deferred (arg)
-  (deferred:$
-    (deferred:process-shell arg)
-    (deferred:nextc it
-      (lambda (x)
-        (with-current-buffer (get-buffer-create "*Auto Shell Command*")
-          (delete-region (point-min) (point-max))
-          (insert x))
-        ; (deferred:process-shell "growlnotify success /t:emacs /i:c:/app/emacs/bin/emacs.ico"))))) ; win
-        (deferred:process-shell "growlnotify -m success -t emacs"))))) ; OSX
+(defun auto-shell-command:notify (msg)
+  (message msg)                                                    ; simple
+  ;;(deferred:process-shell (format "growlnotify -m %s -t emacs" msg))  ; Growl(OSX)
+  ;; (deferred:process-shell (format "growlnotify %s /t:emacs" msg))  ; Growl(Win)
+  )
 
 ; 自動でコンパイルするか？
 (defvar auto-shell-command:active t)
+
+;;; Main:
+
+(defun auto-shell-command:shell-deferred (arg &optional notify-start)
+  (lexical-let ((arg arg)
+                (notify-start notify-start)
+                (result "success"))
+    (deferred:$
+      ;; before
+      (deferred:next
+        (lambda () (if notify-start (auto-shell-command:notify "start"))))
+      ;; main
+      (deferred:process-shell arg)
+      (deferred:error it (lambda (err) (setq result "failed") err))
+      ;; after
+      (deferred:nextc it
+        (lambda (x)
+          (with-current-buffer (get-buffer-create "*Auto Shell Command*")
+            (delete-region (point-min) (point-max))
+            (insert x))
+          (auto-shell-command:notify result))))))
 
 ; 自動コンパイルのON/OFF
 (defun auto-shell-command:toggle ()
@@ -52,7 +67,7 @@
     (setq auto-shell-command:active t))
   (message "auto-shell-command %s" auto-shell-command:active))
 
-;; C-cC-mに割り当て(後で外すかも)
+;; @latertodo C-cC-mに割り当て(後で外すかも)
 (global-set-key "\C-c\C-m" 'auto-shell-command:toggle)
 
 ; 実行するコマンドリスト
@@ -71,6 +86,7 @@
   (if (string-match path (buffer-file-name))
       (progn
         (auto-shell-command:shell-deferred command)
+        ; (auto-shell-command:shell-deferred command t) ; notify-start
         t)
     nil))
 
