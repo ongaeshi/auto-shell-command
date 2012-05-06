@@ -20,19 +20,52 @@
 
 ;;; Commentary:
 
-;; @todo
+;; 'auto-shell-command.el'は、ファイルセーブ時に指定したシェルコマンドを実行することが出来るものです。
+;; 似たようなツールとしてはflymakeやautotest、Guardといったものがあります。
 
-;;; Samples:
+;; 特徴
+;;   1. ファイル名単位で実行するコマンドを指定することが出来る
+;;   2. 一時的にコマンドの実行をON/OFFすることが出来る(まとめて複数のファイルを編集する時に便利)
+;;   3. ファイルの監視からプロセスの実行までを全てEmacsの機能でまかなえるため安定して動作する、全てのOSで動く
+;;   4. 外部ツール(git revert等)によるファイル書き換えによって、期待していなかったコマンドの誤作動が起きない
+;;   5. Emacs再起動時に消える刹那的なコマンドを登録することが出来る
 
-;; @todo
-;; ex.
-;;  書き直す
-;;   (setq auto-shell-command:setting
-;;         (("/path/to/dir/BBB/test" 'match-dir  "make test"                                ("cpp hpp"))
-;;          ("/path/to/dir/doc"      'match-dir  "make all doc"                             ("html"))
-;;          ("/path/to/dir/AAA"      'match-dir  "make all && (cd /path/to/dir/BBB/; make)")
-;;          ("/path/to/dir/BBB"      'match-dir  "(cd /path/to/dir/AAA/; make) && make")
-;;          ("/path/to/dir"          'buffer-dir "make")))
+;; URL
+;;   https://github.com/ongaeshi/auto-shell-command/blob/master/auto-shell-command.el
+
+;;; Install:
+
+;; Need 'emacs-deferred'
+;;   (auto-install-from-url https://github.com/kiwanami/emacs-deferred/raw/master/deferred.el")
+;;   (auto-install-from-url "https://raw.github.com/ongaeshi/auto-shell-command/master/auto-shell-command.el")
+
+;;; Setting:
+
+;; (require 'auto-shell-command)
+
+;; ;; Shortcut setting (Temporarily on/off auto-shell-command run)
+;; (global-set-key "\C-c\C-m" 'ascmd:toggle)
+
+;; ;; Notification of results to Growl (optional)
+;; (defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
+
+;; ;; Easier to popup on errors (optional, need '(require 'popwin)')
+;; (push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
+
+;;; Command-list Setting:
+
+;; ;; とあるCプロジェクトの設定例 (下が優先高)
+;; (ascmd:add '("/path/to/dir"                  "make"))     ; 基本は'make'
+;; (ascmd:add '("/path/to/dir/.gitignore"       "make run")) ; ルートフォルダ直下の'.gitignore'を触ったら'make run'(実行)
+;; (ascmd:add '("/path/to/dir/doc"              "make doc")) ; 'doc'以下を触ったら'make doc'(ドキュメント生成)
+;; (ascmd:add '("/path/to/dir/BBB"              "(cd /path/to/dir/AAA && make && cd ../BBB && make)")) ; BBBをビルドする時は先にAAAをビルドする必要が・・・(良くあることだよね？)
+
+;; ;; とあるRubyプロジェクトの設定例
+;; (ascmd:add '("/path/test/runner.rb"          "rake test"))                     ; 'test/runner.rb'を触ったらフルテスト(時間がかかる)
+;; (ascmd:add '("/path/test/test_/.*\.rb"       "ruby -I../lib -I../test $FILE")) ; 'test/test_*.rb'を触ったら編集したファイルだけを単体でテスト(時間節約)
+
+;; ;; ブラウザとの連携
+;; (ascmd:add '("Resources/.*\.js" "wget -O /dev/null http://0.0.0.0:9090/run")) ; 'Resources/*.js'以下を触ったら'http://0.0.0.0:9090/run'にアクセス
 
 ;;; Code:
 
