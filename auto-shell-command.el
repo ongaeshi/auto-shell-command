@@ -71,16 +71,18 @@
 ;; @latertodo C-cC-mに割り当て(後で外すかも)
 (global-set-key "\C-c\C-m" 'auto-shell-command:toggle)
 
-; 実行するコマンドリスト
-;
-; ex.
-;   (setq auto-shell-command-setting
-;         (("/path/to/dir/BBB/test" 'match-dir  "make test"                                ("cpp hpp"))
-;          ("/path/to/dir/doc"      'match-dir  "make all doc"                             ("html"))
-;          ("/path/to/dir/AAA"      'match-dir  "make all && (cd /path/to/dir/BBB/; make)")
-;          ("/path/to/dir/BBB"      'match-dir  "(cd /path/to/dir/AAA/; make) && make")
-;          ("/path/to/dir"          'buffer-dir "make")))
-(defvar auto-shell-command-setting nil)
+;; Command list
+(setq auto-shell-command:setting nil)
+
+;; Add command
+;; ex.
+;;   (setq auto-shell-command:setting
+;;         (("/path/to/dir/BBB/test" 'match-dir  "make test"                                ("cpp hpp"))
+;;          ("/path/to/dir/doc"      'match-dir  "make all doc"                             ("html"))
+;;          ("/path/to/dir/AAA"      'match-dir  "make all && (cd /path/to/dir/BBB/; make)")
+;;          ("/path/to/dir/BBB"      'match-dir  "(cd /path/to/dir/AAA/; make) && make")
+;;          ("/path/to/dir"          'buffer-dir "make")))
+(defun ascmd:add (v) (push v auto-shell-command:setting))
 
 ; 一つのコマンドを実行
 (defun auto-shell-command:exec1 (path command)
@@ -95,7 +97,7 @@
 (defun auto-shell-command:exec ()
   (interactive)
   (if auto-shell-command:active
-      (find-if '(lambda (v) (apply 'auto-shell-command:exec1 v)) auto-shell-command-setting)))
+      (find-if '(lambda (v) (apply 'auto-shell-command:exec1 v)) auto-shell-command:setting)))
 
 ; ファイルセーブ時にコンパイル
 (add-hook 'after-save-hook 'auto-shell-command:exec)
