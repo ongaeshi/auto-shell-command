@@ -88,10 +88,21 @@
 (defun auto-shell-command:exec1 (path command)
   (if (string-match path (buffer-file-name))
       (progn
-        (auto-shell-command:shell-deferred command)
+        (auto-shell-command:shell-deferred (ascmd:query-reqplace command (buffer-file-name)))
         ; (auto-shell-command:shell-deferred command t) ; notify-start
         t)
     nil))
+
+; query-replace special variable
+(defun ascmd:query-reqplace (command match-path)
+  (let (
+        (file-name (file-name-nondirectory match-path))
+        (dir-name  (file-name-directory match-path))
+        (command command)
+        )
+    (setq command (replace-regexp-in-string "$FILE" file-name command t))
+    (setq command (replace-regexp-in-string "$DIR" dir-name command t))
+    command))
 
 ; auto-shell-commandの実行
 (defun auto-shell-command:exec ()
