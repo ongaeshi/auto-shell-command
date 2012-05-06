@@ -30,13 +30,14 @@
 ;;; Parameter:
 
 (defun auto-shell-command:notify (msg)
-  (message msg)                                                    ; simple
-  ;;(deferred:process-shell (format "growlnotify -m %s -t emacs" msg))  ; Growl(OSX)
-  ;; (deferred:process-shell (format "growlnotify %s /t:emacs" msg))  ; Growl(Win)
+  (message msg)                                                        ; simple
+  ;;(deferred:process-shell (format "growlnotify -m %s -t emacs" msg)) ; Growl(OSX)
+  ;; (deferred:process-shell (format "growlnotify %s /t:emacs" msg))   ; Growl(Win)
   )
 
-; 自動でコンパイルするか？
 (defvar auto-shell-command:active t)
+
+(defvar auto-shell-command:buffer-name "*Auto Shell Command*")
 
 ;;; Main:
 
@@ -50,11 +51,11 @@
         (lambda () (if notify-start (auto-shell-command:notify "start"))))
       ;; main
       (deferred:process-shell arg)
-      (deferred:error it (lambda (err) (setq result "failed") err))
+      (deferred:error it (lambda (err) (setq result "failed") (pop-to-buffer auto-shell-command:buffer-name) err))
       ;; after
       (deferred:nextc it
         (lambda (x)
-          (with-current-buffer (get-buffer-create "*Auto Shell Command*")
+          (with-current-buffer (get-buffer-create auto-shell-command:buffer-name)
             (delete-region (point-min) (point-max))
             (insert x))
           (auto-shell-command:notify result))))))
