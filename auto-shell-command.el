@@ -44,7 +44,8 @@
 ;; (require 'auto-shell-command)
 
 ;; ;; Shortcut setting (Temporarily on/off auto-shell-command run)
-;; (global-set-key "\C-c\C-m" 'ascmd:toggle)
+;; (global-set-key "\C-c\C-m" 'ascmd:toggle)      ; Temporarily on/off auto-shell-command run
+;; (global-set-key (kbd "C-c C-,") 'ascmd:popup)  ; Pop up '*Auto Shell Command*'
 
 ;; ;; Notification of results to Growl (optional)
 ;; (defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
@@ -94,10 +95,17 @@
 (defvar ascmd:active t)
 
 ;; Add to command list
-(defun ascmd:add (v) (push v ascmd:setting))
+(defun ascmd:add (v)
+  (interactive)
+  (push v ascmd:setting))
 
 ;; Result buffer name
 (defvar ascmd:buffer-name "*Auto Shell Command*")
+
+;; Pop up '*Auto Shell Command*'
+(defun ascmd:popup ()
+  (interactive)
+  (pop-to-buffer ascmd:buffer-name))
 
 ;;; Private:
 
