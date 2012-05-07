@@ -31,12 +31,12 @@
 ;;   5. Emacs再起動時に消える刹那的なコマンドを登録することが出来る
 
 ;; URL
-;;   https://github.com/ongaeshi/auto-shell-command/blob/master/auto-shell-command.el
+;;   https://github.com/ongaeshi/auto-shell-command
 
 ;;; Install:
 
 ;; Need 'emacs-deferred'
-;;   (auto-install-from-url https://github.com/kiwanami/emacs-deferred/raw/master/deferred.el")
+;;   (auto-install-from-url "https://github.com/kiwanami/emacs-deferred/raw/master/deferred.el")
 ;;   (auto-install-from-url "https://raw.github.com/ongaeshi/auto-shell-command/master/auto-shell-command.el")
 
 ;;; Setting:
