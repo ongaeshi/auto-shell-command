@@ -1,22 +1,14 @@
-# README.ja
+# auto-shell-command.el
+ファイルセーブ時に指定したシェルコマンドを**非同期で**実行するelispです。似たようなツールとして *flymake* や *autotest* 、 *Guard* があります。
 
-## 名前
-auto-shell-command.el
-
-## 概要
-ファイルセーブ時に指定したシェルコマンドを(非同期で)実行するelispです。似たようなツールとして *flymake* や *autotest* 、 *Guard* があります。
-
-[ongaeshi/auto-shell-command - Github](https://github.com/ongaeshi/auto-shell-command)
-
-## 特徴
-1. **ファイル名単位** で実行するコマンドを指定することが出来る
-2. **一時的にコマンドの実行をON/OFF**することが出来る(まとめて複数のファイルを編集する時に便利)
-3. ファイルの監視からプロセスの実行までEmacsの機能でまかなっているため安定して動作する。Emacsが動く全てのOSで動作する。
-4. 外部ツールによるファイル書き換えによって起こる期待していなかったコマンドの誤作動が起きない
-5. Emacs再起動時に消える一時的なコマンドを登録することが出来る
+1. ファイル名にマッチする正規表現で実行するコマンドを指定
+2. コマンドの実行を一時的に抑制出来る (まとめて複数のファイルを編集する時に便利)
+3. Emacsが動く全てのOSで動作する。ファイルの監視からプロセスの実行までをEmacsの機能でまかなっているため。
+4. Emacs再起動時に消える一時的なコマンドを登録することが出来る
+5. 外部ツールによるファイル書き換えによって起こる、期待外れなコマンドの誤作動が起きない
 
 ## インストール
-*emacs-deferred* のインストールが必要です。
+*emacs-deferred* が必要です。
 
 *auto-install* が使える人は以下のelispを実行して下さい。
 
@@ -27,8 +19,8 @@ auto-shell-command.el
 
 もしくは以下のファイルをロードパスの通った場所に置いて下さい。
 
-1. [deferred.el](https://raw.github.com/kiwanami/emacs-deferred/master/deferred.el)
-2. [auto-shell-command.el](https://raw.github.com/ongaeshi/auto-shell-command/master/auto-shell-command.el)
+* [deferred.el](https://raw.github.com/kiwanami/emacs-deferred/master/deferred.el)
+* [auto-shell-command.el](https://raw.github.com/ongaeshi/auto-shell-command/master/auto-shell-command.el)
 
 ## 初期設定
 ```elisp:.eamcs.d/init.el
@@ -45,15 +37,23 @@ auto-shell-command.el
 (push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
 ```
 
-## コマンドリストの設定例
+## コマンドリストの設定
 ```elisp
 ;; コマンドの登録
 (ascmd:add '("対象ファイルの正規表現" "ファイルセーブ時に実行するコマンド"))
-
+;; 簡単な例
+(ascmd:add '("/path/to/dir" "ls"))      ; '/path/to/dir'以下のファイルをセーブしたら`ls`を実行
 ;; 後に評価したS式が優先高
-(ascmd:add '("…" "…"))
+(ascmd:add '("/path/to/dir/foo.c" "ls -la"))      ; 'foo.c'だけは`ls -la`を実行
+;; 特殊変数も使える
+(ascmd:add '("/path/to/dir/.*\.c" "cat $FILE"))      ; それ以外の.cファイルは`cat ファイル名`を実行
 ```
 
+## 特殊編集
+* $FILE "/path/to/dir/foo.c" -> "foo.c"
+* $DIR  "/path/to/dir/foo.c" -> "/path/to/dir/"
+
+## サンプル
 とある**C言語のプロジェクト**の設定例
 
 ```elisp
@@ -82,3 +82,6 @@ auto-shell-command.el
 
 ## ライセンス
 GPLv3
+
+## Thanks
+- [kiwanami/emacs-deferred](https://github.com/kiwanami/emacs-deferred)
