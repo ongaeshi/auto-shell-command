@@ -1,4 +1,6 @@
-# auto-shell-command.el
+auto-shell-command.el
+=====================
+
 ファイルセーブ時に指定したシェルコマンドを**非同期で**実行するelispです。似たようなツールとして *flymake* や *autotest* 、 *Guard* があります。
 
 1. ファイル名にマッチする正規表現で実行するコマンドを指定
@@ -50,8 +52,8 @@
 ```
 
 ## 特殊編集
-* $FILE "/path/to/dir/foo.c" -> "foo.c"
-* $DIR  "/path/to/dir/foo.c" -> "/path/to/dir/"
+* $FILE ... "/path/to/dir/foo.c" -> "foo.c"
+* $DIR  ... "/path/to/dir/foo.c" -> "/path/to/dir/"
 
 ## サンプル
 とある**C言語のプロジェクト**の設定例
@@ -77,11 +79,11 @@
 (ascmd:add '("Resources/.*\.js" "wget -O /dev/null http://0.0.0.0:9090/run")) ; 'Resources/*.js'以下を触ったら'http://0.0.0.0:9090/run'にアクセス
 ```
 
-## 作者
-* ongaeshi <ongaeshi0621@gmail.com>
-
 ## ライセンス
 GPLv3
 
 ## Thanks
 - [kiwanami/emacs-deferred](https://github.com/kiwanami/emacs-deferred)
+
+----
+Copyright (C) 2012 ongaeshi <<ongaeshi0621@gmail.com>>
