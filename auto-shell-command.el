@@ -135,7 +135,9 @@
     (deferred:$
       ;; before
       (deferred:next
-        (lambda () (if notify-start (ascmd:notify "start"))))
+        (lambda ()
+          (if notify-start (ascmd:notify "start"))
+          (setq ascmd:process-count (+ ascmd:process-count 1))))
       ;; main
       (deferred:process-shell arg)
       (deferred:error it (lambda (err) (setq result "failed") (pop-to-buffer ascmd:buffer-name) err))
@@ -145,6 +147,7 @@
           (with-current-buffer (get-buffer-create ascmd:buffer-name)
             (delete-region (point-min) (point-max))
             (insert x))
+          (setq ascmd:process-count (- ascmd:process-count 1))
           (ascmd:notify result))))))
 
 ;; query-replace special variable
@@ -157,6 +160,21 @@
     (setq command (replace-regexp-in-string "$FILE" file-name command t))
     (setq command (replace-regexp-in-string "$DIR" dir-name command t))
     command))
+
+;; Display mode-line
+(setq ascmd:process-count 0)
+
+(defun ascmd:process-count-clear ()
+  (interactive)
+  (setq ascmd:process-count 0))
+
+(defun ascmd:display-process-count ()
+  (if (> ascmd:process-count 0)
+      (format "[ascmd:%d] " ascmd:process-count)
+    ""))
+
+(add-to-list 'default-mode-line-format
+             '(:eval (ascmd:display-process-count)))
 
 (provide 'auto-shell-command)
 ;;; auto-shell-command.el ends here
