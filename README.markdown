@@ -79,7 +79,7 @@ Cooperation with the browser
 (ascmd:add '("Resources/.*\.js" "wget -O /dev/null http://0.0.0.0:9090/run")) ; If you touch the following: 'Resources/*.js' access to 'http://0.0.0.0:9090/run'
 ```
 
-## ライセンス
+## Lisence
 GPLv3
 
 ## Thanks
