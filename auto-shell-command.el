@@ -146,7 +146,7 @@
 ;;; Private:
 
 ;; Command list
-(setq ascmd:setting nil)
+(defvar ascmd:setting nil)
 
 ;; Exec-command when you save file
 (add-hook 'after-save-hook 'ascmd:exec-on-save)
