@@ -200,7 +200,8 @@
         (lambda (x)
           (with-current-buffer (get-buffer-create ascmd:buffer-name)
             (delete-region (point-min) (point-max))
-            (insert x))
+            (insert x)
+            (goto-char (point-min)))
           (setq ascmd:process-count (- ascmd:process-count 1))
           (ascmd:notify result))))))
 
