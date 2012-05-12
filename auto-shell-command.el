@@ -90,9 +90,7 @@
   (if ascmd:active
       (setq ascmd:active nil)
     (setq ascmd:active t))
-  (force-mode-line-update nil)
-  ;(message "auto-shell-command %s" ascmd:active)
-  )
+  (force-mode-line-update nil))
 
 (defvar ascmd:active t)
 
