@@ -118,12 +118,17 @@
 (defun ascmd:exec ()
   (interactive)
   (if ascmd:active
-      (find-if '(lambda (v) (apply 'ascmd:exec1 v)) ascmd:setting)))
+      (find-if '(lambda (v) (apply 'ascmd:exec1 (buffer-file-name) v)) ascmd:setting)))
 
-(defun ascmd:exec1 (path command)
-  (if (string-match path (buffer-file-name))
+(defun ascmd:exec-file-name (file-name)
+  (interactive "fSpecify target file :")
+  (find-file file-name)                 ; Don't work when use 'save-window-excursion'
+  (find-if '(lambda (v) (apply 'ascmd:exec1 file-name v)) ascmd:setting))
+
+(defun ascmd:exec1 (file-name path command)
+  (if (string-match path file-name)
       (progn
-        (ascmd:shell-deferred (ascmd:query-reqplace command (buffer-file-name)))
+        (ascmd:shell-deferred (ascmd:query-reqplace command file-name))
         ; (ascmd:shell-deferred command t) ; notify-start
         t)
     nil))
