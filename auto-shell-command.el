@@ -107,22 +107,25 @@
   (interactive)
   (pop-to-buffer ascmd:buffer-name))
 
+;; Exec-command specify file name
+(defun ascmd:exec (file-name)
+  (interactive "fSpecify target file :")
+  (ascmd:exec-in file-name t))
+
 ;;; Private:
 
 ;; Command list
 (setq ascmd:setting nil)
 
 ;; Exec-command when you save file
-(add-hook 'after-save-hook 'ascmd:exec)
-
-(defun ascmd:exec ()
-  (interactive)
+(add-hook 'after-save-hook 'ascmd:exec-on-save)
+(defun ascmd:exec-on-save ()
   (if ascmd:active
-      (find-if '(lambda (v) (apply 'ascmd:exec1 (buffer-file-name) v)) ascmd:setting)))
+      (ascmd:exec-in (buffer-file-name) nil)))
 
-(defun ascmd:exec-file-name (file-name)
-  (interactive "fSpecify target file :")
-  (find-file file-name)                 ; Don't work when use 'save-window-excursion'
+(defun ascmd:exec-in (file-name find-file-p)
+  (if find-file-p
+      (find-file file-name))
   (find-if '(lambda (v) (apply 'ascmd:exec1 file-name v)) ascmd:setting))
 
 ;; ;; Experiment : To run the command without having to buffer switching
