@@ -136,7 +136,7 @@
 ;; Exec-command specify file name
 (defun ascmd:exec ()
   (interactive)
-  (ascmd:exec-in (read-file-name "Specify target file : " nil (buffer-file-name) t)
+  (ascmd:exec-in (read-file-name "Specify target file : " nil (buffer-file-name) nil)
                  t))
 
 ;;; Private:
