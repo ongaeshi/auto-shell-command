@@ -105,9 +105,16 @@
 (defvar ascmd:buffer-name "*Auto Shell Command*")
 
 ;; Pop up '*Auto Shell Command*'
-(defun ascmd:popup ()
-  (interactive)
-  (pop-to-buffer ascmd:buffer-name))
+(defun ascmd:popup (n)
+  (interactive "P")
+    (let ((with-arg (consp n)))
+      (if with-arg
+          (progn
+            (save-selected-window
+              (select-window (split-window-horizontally))
+              (switch-to-buffer ascmd:buffer-name))
+            )
+        (pop-to-buffer ascmd:buffer-name))))
 
 ;; Exec-command specify file name
 (defun ascmd:exec ()
