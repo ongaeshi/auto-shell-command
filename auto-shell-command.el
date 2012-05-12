@@ -179,7 +179,8 @@
 
 (defun ascmd:expand-path (path)
   (if (string-match "^~" path)
-      (setq path (expand-file-name path))))
+      (expand-file-name path)
+    path))
 
 (defun ascmd:shell-deferred (arg &optional notify-start)
   (lexical-let ((arg arg)
