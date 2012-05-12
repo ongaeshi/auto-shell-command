@@ -97,9 +97,18 @@
 (defvar ascmd:active t)
 
 ;; Add to command list
-(defun ascmd:add (v)
+(defun ascmd:add (&optional v)
   (interactive)
-  (push v ascmd:setting))
+  (cond (v
+         (push v ascmd:setting))
+        (t
+         (let (path command)
+           (setq path (read-file-name "Path: " nil (buffer-file-name))) 
+           (setq command (read-string "Command: "))
+           (let ((msg (format "(ascmd:add '(\"%s\" \"%s\"))" path command)))
+             (kill-new msg)
+             (message msg))
+           (push (list path command) ascmd:setting)))))
 
 ;; Result buffer name
 (defvar ascmd:buffer-name "*Auto Shell Command*")
@@ -112,8 +121,7 @@
           (progn
             (save-selected-window
               (select-window (split-window-horizontally))
-              (switch-to-buffer ascmd:buffer-name))
-            )
+              (switch-to-buffer ascmd:buffer-name)))
         (pop-to-buffer ascmd:buffer-name))))
 
 ;; Exec-command specify file name
@@ -153,6 +161,8 @@
 ;;         (lambda () (switch-to-buffer buffer))))))
 
 (defun ascmd:exec1 (file-name path command)
+  (if (string-match "^~" path)
+      (setq path (expand-file-name path)))
   (if (string-match path file-name)
       (progn
         (ascmd:shell-deferred (ascmd:query-reqplace command file-name))
