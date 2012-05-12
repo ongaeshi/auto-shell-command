@@ -110,6 +110,17 @@
              (message msg))
            (push (list path command) ascmd:setting)))))
 
+;; Remove first command
+(defun ascmd:remove ()
+  (interactive)
+  (let* ((cmd (pop ascmd:setting))
+         (msg (format "(ascmd:add '(\"%s\" \"%s\"))" (car cmd) (car (cdr cmd)))))
+    (if cmd
+        (progn
+          (kill-new msg)
+          (message (format "Remove : %s" msg)))
+      (message "Command list is empty."))))
+
 ;; Result buffer name
 (defvar ascmd:buffer-name "*Auto Shell Command*")
 
