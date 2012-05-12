@@ -30,13 +30,15 @@ Also put the location of the load path through the following files or.
 (require 'auto-shell-command)
 
 ;; Set of key bindings
-(global-set-key "\C-c\C-m" 'ascmd:toggle)      ; Temporarily on/off auto-shell-command run(global-set-key (kbd "C-c C-,") 'ascmd:popup)  ; Pop up '*Auto Shell Command*'
+(global-set-key (kbd "C-c C-m") 'ascmd:toggle) ; Temporarily on/off auto-shell-command run
+(global-set-key (kbd "C-c C-,") 'ascmd:popup)  ; Pop up '*Auto Shell Command*'
+(global-set-key (kbd "C-c C-.") 'ascmd:exec)   ; Exec-command specify file name
 
-;; Notification of results to Growl (optional)
-(defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
+;; ;; Easier to popup on errors (optional, need '(require 'popwin)')
+;; (push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
 
-;; Easier to popup on errors (optional, need '(require 'popwin)')
-(push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
+;; ;; Notification of results to Growl (optional)
+;; (defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
 ```
 
 ## Command list setting

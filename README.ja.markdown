@@ -1,13 +1,16 @@
 auto-shell-command.el
 =====================
 
-ファイルセーブ時に指定したシェルコマンドを**非同期で**実行するelispです。似たようなツールとして *flymake* や *autotest* 、 *Guard* があります。
+ファイルセーブ時に指定したシェルコマンドを**非同期で**実行するelispです。似たようなツールとして *flymake* や *autotest* , *Guard* があります。
 
-1. 対象ファイルの正規表現と、セーブ時に実行するコマンドを対で指定
-2. コマンドの実行を一時的にサスペンド出来る (まとめて複数のファイルを編集する時に便利)
-3. Emacsが動く全てのOSで動作する(ファイルの監視からプロセスの実行までをEmacsの機能でまかなっているため)
-4. 一時的なコマンドを登録することが出来る(Emacs再起動で消える)
-5. 外部ツールによるファイル書き換えによって起こる、期待外れなコマンドの誤作動が起きない
+ファイルの監視からプロセスの実行など主要な機能はEmacsのAPIだけで実装しているため **Emacsが動く全てのOS**で動作します。
+
+以下のような特徴を持ちます。
+
+1. ファイル名をキーに実行するコマンドを指定します。同じ拡張子のファイルでも名前によって違うコマンドを指定することが可能です
+2. コマンドの実行を一時的にサスペンドすることが出来ます。まとめて複数のファイルを編集する時に便利です
+3. 特定のファイルに対して、一時的にコマンドを追加、上書きすることが出来ます
+4. 外部ツールによるファイルの書き換えが起こってもコマンドは実行されません。予期しないファイル書き換えにより大量のプロセスが走ってしまうような事故は起きません
 
 ## インストール
 *emacs-deferred* が必要です。
@@ -29,14 +32,16 @@ auto-shell-command.el
 (require 'auto-shell-command)
 
 ;; キーバインドの設定
-(global-set-key "\C-c\C-m" 'ascmd:toggle)      ; 一時的にauto-shell-commandの実行をON/OFFする
-(global-set-key (kbd "C-c C-,") 'ascmd:popup)  ; '*Auto Shell Command*'をポップアップする
+(global-set-key (kbd "C-c C-m") 'ascmd:toggle) ; Temporarily on/off auto-shell-command run
+(global-set-key (kbd "C-c C-,") 'ascmd:popup)  ; Pop up '*Auto Shell Command*'
+(global-set-key (kbd "C-c C-.") 'ascmd:exec)   ; Exec-command specify file name
 
-;; 結果の通知をGrowlで行う (optional)
-(defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
+;; ;; エラー時のポップアップを見やすくする (optional, '(require 'popwin)'が必要です)
+;; (push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
 
-;; エラー時のポップアップを見やすくする (optional, '(require 'popwin)'が必要です)
-(push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
+;; ;; 結果の通知をGrowlで行う (optional)
+;; (defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
+
 ```
 
 ## コマンドリストの設定
@@ -69,6 +74,7 @@ auto-shell-command.el
 とある**Rubyプロジェクト**の設定例
 
 ```elisp
+(ascmd:add '("junk/.*\.rb" "ruby $FILE"))                                      ; junk/以下のRubyスクリプトは無条件で実行
 (ascmd:add '("/path/test/runner.rb"          "rake test"))                     ; 'test/runner.rb'を触ったらフルテスト(時間がかかる)
 (ascmd:add '("/path/test/test_/.*\.rb"       "ruby -I../lib -I../test $FILE")) ; 'test/test_*.rb'を触ったら編集したファイルだけを単体でテスト(時間節約)
 ```
@@ -78,6 +84,30 @@ auto-shell-command.el
 ```elisp
 (ascmd:add '("Resources/.*\.js" "wget -O /dev/null http://0.0.0.0:9090/run")) ; 'Resources/*.js'以下を触ったら'http://0.0.0.0:9090/run'にアクセス
 ```
+
+## 一時的に使うコマンドを登録する
+M-x ascmd:add を使います
+
+* Path: 対象ファイル名(正規表現も使えます)
+* Command: ファイルセーブ時に実行するコマンド
+
+を指定して下さい。
+
+### 設定例
+1. M-x ascmd:add
+2. Path: **/path/to/abc.rb**
+3. Command: **ruby $FILE arg1**
+
+*/path/to/abc.rb* をセーブするたびに *ruby /path/to/abc.rb arg1* が実行されます。この設定はEmacsを再起動すると消える一時的なものです。
+
+### 再起動しても消えないようにする
+M-x ascmd:add を実行すると *(ascmd:add '("/path/to/abc.rb" "ruby $FILE arg1"))* といったS式がキルリングにセーブされています。
+これを .emacs.d/init.el 等に貼付けておけばOKです。
+
+## ファイルを書き換えずに関連づけたコマンドを実行する
+1. M-x ascmd:exec
+2. 実行したいコマンドが登録されたファイルを指定します
+3. ファイルの実体がなくても登録されたコマンドがあれば実行します
 
 ## ライセンス
 GPLv3
