@@ -90,7 +90,9 @@
   (if ascmd:active
       (setq ascmd:active nil)
     (setq ascmd:active t))
-  (message "auto-shell-command %s" ascmd:active))
+  (force-mode-line-update nil)
+  ;(message "auto-shell-command %s" ascmd:active)
+  )
 
 (defvar ascmd:active t)
 
@@ -192,9 +194,11 @@
   (setq ascmd:process-count 0))
 
 (defun ascmd:display-process-count ()
-  (if (> ascmd:process-count 0)
-      (format "[ascmd:%d] " ascmd:process-count)
-    ""))
+  (cond ((not ascmd:active) 
+         "[ascmd:stop]")
+        ((> ascmd:process-count 0)
+         (format "[ascmd:%d] " ascmd:process-count))
+        ))
 
 (add-to-list 'default-mode-line-format
              '(:eval (ascmd:display-process-count)))
