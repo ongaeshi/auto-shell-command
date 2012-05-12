@@ -161,14 +161,16 @@
 ;;         (lambda () (switch-to-buffer buffer))))))
 
 (defun ascmd:exec1 (file-name path command)
-  (if (string-match "^~" path)
-      (setq path (expand-file-name path)))
-  (if (string-match path file-name)
+  (if (string-match (ascmd:expand-path path) (expand-file-name file-name))
       (progn
         (ascmd:shell-deferred (ascmd:query-reqplace command file-name))
         ; (ascmd:shell-deferred command t) ; notify-start
         t)
     nil))
+
+(defun ascmd:expand-path (path)
+  (if (string-match "^~" path)
+      (setq path (expand-file-name path))))
 
 (defun ascmd:shell-deferred (arg &optional notify-start)
   (lexical-let ((arg arg)
