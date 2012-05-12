@@ -125,6 +125,20 @@
   (find-file file-name)                 ; Don't work when use 'save-window-excursion'
   (find-if '(lambda (v) (apply 'ascmd:exec1 file-name v)) ascmd:setting))
 
+;; ;; Experiment : To run the command without having to buffer switching
+;; (defun ascmd:exec-file-name (file-name)
+;;   (interactive "fSpecify target file :")
+;;   (lexical-let ((file-name file-name)
+;;                 (buffer (current-buffer)))
+;;     (deferred:$
+;;       (deferred:next
+;;         (lambda ()
+;;           (find-file file-name)                 ; Don't work when use 'save-window-excursion'
+;;           (find-if '(lambda (v) (apply 'ascmd:exec1 file-name v)) ascmd:setting)))
+;;       (deferred:wait 100)
+;;       (deferred:nextc it
+;;         (lambda () (switch-to-buffer buffer))))))
+
 (defun ascmd:exec1 (file-name path command)
   (if (string-match path file-name)
       (progn
