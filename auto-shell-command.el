@@ -129,8 +129,11 @@
       (if with-arg
           (progn
             (save-selected-window
-              (select-window (split-window-horizontally))
+              (if (one-window-p)
+                  (select-window (split-window-horizontally))
+                (other-window 1))
               (switch-to-buffer ascmd:buffer-name)))
+        ;; (display-buffer ascmd:buffer-name))))
         (pop-to-buffer ascmd:buffer-name))))
 
 ;; Exec-command specify file name
