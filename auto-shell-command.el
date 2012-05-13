@@ -74,7 +74,7 @@
 (eval-when-compile (require 'cl))
 (require 'deferred)
 
-(setq ascmd:version "0.2")
+(setq ascmd:version "0.2.1")
 
 ;;; Public:
 
@@ -146,7 +146,7 @@
 ;;; Private:
 
 ;; Command list
-(setq ascmd:setting nil)
+(defvar ascmd:setting nil)
 
 ;; Exec-command when you save file
 (add-hook 'after-save-hook 'ascmd:exec-on-save)
