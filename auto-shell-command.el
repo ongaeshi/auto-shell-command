@@ -124,6 +124,12 @@
           (message (format "Remove : %s" msg)))
       (message "Command list is empty."))))
 
+;; Remove all command
+;;;###autoload
+(defun ascmd:remove-all ()
+  (interactive)
+  (setq ascmd:setting nil))
+
 ;; Result buffer name
 (defvar ascmd:buffer-name "*Auto Shell Command*")
 
