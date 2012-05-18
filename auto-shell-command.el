@@ -74,7 +74,7 @@
 (eval-when-compile (require 'cl))
 (require 'deferred)
 
-(setq ascmd:version "0.2.1")
+(setq ascmd:version "0.2.2")
 
 ;;; Public:
 
