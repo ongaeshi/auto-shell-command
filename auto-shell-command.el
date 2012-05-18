@@ -1,4 +1,4 @@
-;;; auto-shell-command.el --- 
+;;; auto-shell-command.el --- Run the shell command asynchronously that you specified when you save the file. 
 
 ;; Copyright (C) 2012 ongaeshi
 
@@ -79,6 +79,7 @@
 ;;; Public:
 
 ;; Notify function
+;;;###autoload
 (defun ascmd:notify (msg)
   (message msg)                                                        ; emacs's message function
   ;;(deferred:process-shell (format "growlnotify -m %s -t emacs" msg)) ; Growl(OSX)
@@ -86,6 +87,7 @@
   )
 
 ;; Toggle after-save-hook (Recommended to set the key bindings)
+;;;###autoload
 (defun ascmd:toggle ()
   (interactive)
   (if ascmd:active
@@ -96,6 +98,7 @@
 (defvar ascmd:active t)
 
 ;; Add to command list
+;;;###autoload
 (defun ascmd:add (&optional v)
   (interactive)
   (cond (v
@@ -110,6 +113,7 @@
            (push (list path command) ascmd:setting)))))
 
 ;; Remove first command
+;;;###autoload
 (defun ascmd:remove ()
   (interactive)
   (let* ((cmd (pop ascmd:setting))
@@ -124,6 +128,7 @@
 (defvar ascmd:buffer-name "*Auto Shell Command*")
 
 ;; Pop up '*Auto Shell Command*'
+;;;###autoload
 (defun ascmd:popup (n)
   (interactive "P")
     (let ((with-arg (consp n)))
@@ -138,10 +143,16 @@
         (pop-to-buffer ascmd:buffer-name))))
 
 ;; Exec-command specify file name
+;;;###autoload
 (defun ascmd:exec ()
   (interactive)
   (ascmd:exec-in (read-file-name "Specify target file : " nil (buffer-file-name) nil)
                  t))
+
+;;;###autoload
+(defun ascmd:process-count-clear ()
+  (interactive)
+  (setq ascmd:process-count 0))
 
 ;;; Private:
 
@@ -222,10 +233,6 @@
 
 ;; Display mode-line
 (setq ascmd:process-count 0)
-
-(defun ascmd:process-count-clear ()
-  (interactive)
-  (setq ascmd:process-count 0))
 
 (defun ascmd:display-process-count ()
   (cond ((not ascmd:active) 
