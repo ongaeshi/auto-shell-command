@@ -158,7 +158,6 @@
 ;;;###autoload
 (defun ascmd:process-count-clear ()
   (interactive)
-  (setq ascmd:process-count 0)
   (setq ascmd:process-queue nil))
 
 ;;; Private:
@@ -177,26 +176,14 @@
       (find-file file-name))
   (find-if '(lambda (v) (apply 'ascmd:exec1 file-name v)) ascmd:setting))
 
-;; ;; Experiment : To run the command without having to buffer switching
-;; (defun ascmd:exec-file-name (file-name)
-;;   (interactive "fSpecify target file :")
-;;   (lexical-let ((file-name file-name)
-;;                 (buffer (current-buffer)))
-;;     (deferred:$
-;;       (deferred:next
-;;         (lambda ()
-;;           (find-file file-name)                 ; Don't work when use 'save-window-excursion'
-;;           (find-if '(lambda (v) (apply 'ascmd:exec1 file-name v)) ascmd:setting)))
-;;       (deferred:wait 100)
-;;       (deferred:nextc it
-;;         (lambda () (switch-to-buffer buffer))))))
-
 (defun ascmd:exec1 (file-name path command)
   (if (string-match (ascmd:expand-path path) (expand-file-name file-name))
       (progn
-        (if (> ascmd:process-count 0)
-            (ascmd:add-command-queue (ascmd:query-reqplace command file-name t))
-            (ascmd:shell-deferred (ascmd:query-reqplace command file-name)))
+        (let ((command (ascmd:query-reqplace command file-name t))
+              (process-exec-p (ascmd:process-exec-p)))
+          (ascmd:add-command-queue command)
+          (unless process-exec-p
+            (ascmd:shell-deferred command)))
         t)
     nil))
 
@@ -213,8 +200,7 @@
       ;; before
       (deferred:next
         (lambda ()
-          (if notify-start (ascmd:notify "start"))
-          (setq ascmd:process-count (+ ascmd:process-count 1))))
+          (if notify-start (ascmd:notify "start"))))
       ;; main
       (deferred:process-shell arg)
       (deferred:error it (lambda (err) (setq result "failed") (pop-to-buffer ascmd:buffer-name) err))
@@ -226,15 +212,16 @@
             (insert x)
             ;(goto-char (point-min))
             )
-          (setq ascmd:process-count (- ascmd:process-count 1))
           (ascmd:notify result)
-          (if (> (length ascmd:process-queue) 0)
-              (ascmd:shell-deferred (pop ascmd:process-queue))))))))
+          (pop ascmd:process-queue)
+          (force-mode-line-update nil)
+          (if (ascmd:process-exec-p)
+              (ascmd:shell-deferred (car ascmd:process-queue))))))))
 
 (defvar ascmd:process-queue nil)
 
 (defun ascmd:add-command-queue (arg)
-  (push arg ascmd:process-queue))
+  (setq ascmd:process-queue (append ascmd:process-queue (list arg))))
 
 ;; query-replace special variable
 (defun ascmd:query-reqplace (command match-path &optional cd-prefix-p)
@@ -249,16 +236,17 @@
     command))
 
 ;; Display mode-line
-(setq ascmd:process-count 0)
+(defun ascmd:process-count ()
+  (length ascmd:process-queue))
 
-(defun ascmd:task-count ()
-  (+ ascmd:process-count (length ascmd:process-queue)))
+(defun ascmd:process-exec-p ()
+  (not (null ascmd:process-queue)))
 
 (defun ascmd:display-process-count ()
   (cond ((not ascmd:active) 
          "[ascmd:stop]")
-        ((> (ascmd:task-count) 0)
-         (format "[ascmd:%d] " (ascmd:task-count)))
+        ((ascmd:process-exec-p)
+         (format "[ascmd:%d] " (ascmd:process-count)))
         ))
 
 (add-to-list 'default-mode-line-format
