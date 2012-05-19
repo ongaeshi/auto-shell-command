@@ -1,0 +1,28 @@
+2012-05-19 23:49  ongaeshi  <ongaeshi0621@gmail.com>
+
+        * Version 0.3
+        * Add process queue. If Tasks are added continuously, error doesn't occor.
+        * Add ascmd:process-queue
+        * Add ascmd:remove-all
+        * Except `(goto-char (point-min)`
+
+2012-05-12 00:00  ongaeshi  <ongaeshi0621@gmail.com>
+
+        * Version 0.2
+        * First stable version
+
+2012-05-06 00:00  ongaeshi  <ongaeshi0621@gmail.com>
+
+        * Initial version
+
+Local variables:
+add-log-time-format: (lambda ()
+  (let* ((time (current-time))
+(system-time-locale "C")
+(diff (+ (cadr time) 32400))
+(lo (% diff 65536))
+(hi (+ (car time) (/ diff 65536))))
+  (format-time-string "%Y-%m-%d %H:%M" (list hi lo) t)))
+indent-tabs-mode: nil
+tab-width: 8
+end:
