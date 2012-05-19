@@ -158,7 +158,8 @@
 ;;;###autoload
 (defun ascmd:process-count-clear ()
   (interactive)
-  (setq ascmd:process-count 0))
+  (setq ascmd:process-count 0)
+  (setq ascmd:process-queue nil))
 
 ;;; Private:
 
@@ -193,8 +194,9 @@
 (defun ascmd:exec1 (file-name path command)
   (if (string-match (ascmd:expand-path path) (expand-file-name file-name))
       (progn
-        (ascmd:shell-deferred (ascmd:query-reqplace command file-name))
-        ; (ascmd:shell-deferred command t) ; notify-start
+        (if (> ascmd:process-count 0)
+            (ascmd:add-command-queue (ascmd:query-reqplace command file-name t))
+            (ascmd:shell-deferred (ascmd:query-reqplace command file-name)))
         t)
     nil))
 
@@ -225,15 +227,23 @@
             ;(goto-char (point-min))
             )
           (setq ascmd:process-count (- ascmd:process-count 1))
-          (ascmd:notify result))))))
+          (ascmd:notify result)
+          (if (> (length ascmd:process-queue) 0)
+              (ascmd:shell-deferred (pop ascmd:process-queue))))))))
+
+(defvar ascmd:process-queue nil)
+
+(defun ascmd:add-command-queue (arg)
+  (push arg ascmd:process-queue))
 
 ;; query-replace special variable
-(defun ascmd:query-reqplace (command match-path)
+(defun ascmd:query-reqplace (command match-path &optional cd-prefix-p)
   (let (
         (file-name (file-name-nondirectory match-path))
         (dir-name  (file-name-directory match-path))
-        (command command)
-        )
+        (command (if cd-prefix-p
+                     (concat "cd $DIR && (" command ")")
+                     command)))
     (setq command (replace-regexp-in-string "$FILE" file-name command t))
     (setq command (replace-regexp-in-string "$DIR" dir-name command t))
     command))
@@ -241,11 +251,14 @@
 ;; Display mode-line
 (setq ascmd:process-count 0)
 
+(defun ascmd:task-count ()
+  (+ ascmd:process-count (length ascmd:process-queue)))
+
 (defun ascmd:display-process-count ()
   (cond ((not ascmd:active) 
          "[ascmd:stop]")
-        ((> ascmd:process-count 0)
-         (format "[ascmd:%d] " ascmd:process-count))
+        ((> (ascmd:task-count) 0)
+         (format "[ascmd:%d] " (ascmd:task-count)))
         ))
 
 (add-to-list 'default-mode-line-format
