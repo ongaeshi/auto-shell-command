@@ -203,7 +203,7 @@
           (if notify-start (ascmd:notify "start"))))
       ;; main
       (deferred:process-shell arg)
-      (deferred:error it (lambda (err) (setq result "failed") (pop-to-buffer ascmd:buffer-name) err))
+      (deferred:error it (lambda (err) (setq result "failed") (display-buffer ascmd:buffer-name) err))
       ;; after
       (deferred:nextc it
         (lambda (x)
