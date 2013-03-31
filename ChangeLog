@@ -1,5 +1,11 @@
+2013-04-01 00:52  ongaeshi  <ongaeshi@ongaeshi-iMac.local>
+
+        * Version 0.5.1
+        * Command queue to add the same command time of less than one
+
 2013-03-31 23:11  ongaeshi  <ongaeshi0621@gmail.com>
 
+        * Version 0.5.0
         * When the same command is registered do not increase the command
         * Cursor does not move when command error (pop-to-buffer -> display-buffer)
         * Do not switch the file specified at `ascmd:exec`

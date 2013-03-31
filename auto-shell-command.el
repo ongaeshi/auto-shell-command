@@ -4,7 +4,7 @@
 
 ;; Author: ongaeshi
 ;; Keywords: shell, save, async, deferred, auto
-;; Version: 0.5.0
+;; Version: 0.5.1
 ;; Package-Requires: ((deferred "0.3.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
