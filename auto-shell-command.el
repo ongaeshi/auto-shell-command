@@ -221,7 +221,8 @@
 (defvar ascmd:process-queue nil)
 
 (defun ascmd:add-command-queue (arg)
-  (setq ascmd:process-queue (append ascmd:process-queue (list arg))))
+  (unless (string-equal (car (last ascmd:process-queue)) arg)
+      (setq ascmd:process-queue (append ascmd:process-queue (list arg)))))
 
 ;; query-replace special variable
 (defun ascmd:query-reqplace (command match-path &optional cd-prefix-p)
