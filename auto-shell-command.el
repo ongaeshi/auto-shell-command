@@ -153,7 +153,7 @@
 (defun ascmd:exec ()
   (interactive)
   (ascmd:exec-in (read-file-name "Specify target file : " nil (buffer-file-name) nil)
-                 t))
+                 nil))
 
 ;;;###autoload
 (defun ascmd:process-count-clear ()
