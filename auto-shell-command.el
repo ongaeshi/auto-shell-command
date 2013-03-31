@@ -152,8 +152,8 @@
 ;;;###autoload
 (defun ascmd:exec ()
   (interactive)
-  (ascmd:exec-in (read-file-name "Specify target file : " nil (buffer-file-name) nil)
-                 nil))
+  (unless (ascmd:exec-in (read-file-name "Specify target file : " nil (buffer-file-name) nil) nil)
+    (error "Not found `ascmd:add`")))
 
 ;;;###autoload
 (defun ascmd:process-count-clear ()
