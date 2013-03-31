@@ -4,7 +4,7 @@
 
 ;; Author: ongaeshi
 ;; Keywords: shell, save, async, deferred, auto
-;; Version: 0.3.2
+;; Version: 0.5.0
 ;; Package-Requires: ((deferred "0.3.1"))
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -152,8 +152,8 @@
 ;;;###autoload
 (defun ascmd:exec ()
   (interactive)
-  (ascmd:exec-in (read-file-name "Specify target file : " nil (buffer-file-name) nil)
-                 t))
+  (unless (ascmd:exec-in (read-file-name "Specify target file : " nil (buffer-file-name) nil) nil)
+    (error "Not found `ascmd:add`")))
 
 ;;;###autoload
 (defun ascmd:process-count-clear ()
@@ -203,7 +203,7 @@
           (if notify-start (ascmd:notify "start"))))
       ;; main
       (deferred:process-shell arg)
-      (deferred:error it (lambda (err) (setq result "failed") (pop-to-buffer ascmd:buffer-name) err))
+      (deferred:error it (lambda (err) (setq result "failed") (display-buffer ascmd:buffer-name) err))
       ;; after
       (deferred:nextc it
         (lambda (x)
@@ -221,7 +221,8 @@
 (defvar ascmd:process-queue nil)
 
 (defun ascmd:add-command-queue (arg)
-  (setq ascmd:process-queue (append ascmd:process-queue (list arg))))
+  (unless (string-equal (car (last ascmd:process-queue)) arg)
+      (setq ascmd:process-queue (append ascmd:process-queue (list arg)))))
 
 ;; query-replace special variable
 (defun ascmd:query-reqplace (command match-path &optional cd-prefix-p)

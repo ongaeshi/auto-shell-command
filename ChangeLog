@@ -1,3 +1,10 @@
+2013-03-31 23:11  ongaeshi  <ongaeshi0621@gmail.com>
+
+        * When the same command is registered do not increase the command
+        * Cursor does not move when command error (pop-to-buffer -> display-buffer)
+        * Do not switch the file specified at `ascmd:exec`
+        * Error: the command is not registered in the specified file
+
 2012-05-20 00:36  ongaeshi  <ongaeshi0621@gmail.com>
 
         * Version 0.3.1
