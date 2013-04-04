@@ -5,7 +5,7 @@
 ;; Author: ongaeshi
 ;; Keywords: shell, save, async, deferred, auto
 ;; Version: 0.5.1
-;; Package-Requires: ((deferred "0.3.1"))
+;; Package-Requires: ((deferred "20130312") (popwin "20130329"))
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -50,9 +50,9 @@
 ;; (global-set-key (kbd "C-c C-,") 'ascmd:popup)  ; Pop up '*Auto Shell Command*'
 ;; (global-set-key (kbd "C-c C-.") 'ascmd:exec)   ; Exec-command specify file name
 
-;; ;; ;; Easier to popup on errors (optional, need '(require 'popwin)')
-;; ;; (push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
-;;
+;; ;; Popup on errors
+;; (push '("*Auto Shell Command*" :height 20 :noselect t) popwin:special-display-config)
+
 ;; ;; ;; Notification of results to Growl (optional)
 ;; ;; (defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
 
@@ -75,6 +75,7 @@
 
 (eval-when-compile (require 'cl))
 (require 'deferred)
+(require 'popwin)
 
 ;;; Public:
 
@@ -203,20 +204,27 @@
           (if notify-start (ascmd:notify "start"))))
       ;; main
       (deferred:process-shell arg)
-      (deferred:error it (lambda (err) (setq result "failed") (display-buffer ascmd:buffer-name) err))
+      (deferred:error it (lambda (err) (setq result "failed") err))
       ;; after
       (deferred:nextc it
         (lambda (x)
           (with-current-buffer (get-buffer-create ascmd:buffer-name)
             (delete-region (point-min) (point-max))
             (insert x)
-            ;(goto-char (point-min))
-            )
+            (goto-char (point-max))
+            (if (string-equal result "failed")
+                (display-buffer ascmd:buffer-name)
+              (if (ascmd:window-popup-p) 
+                  (delete-window popwin:popup-window))))
           (ascmd:notify result)
           (pop ascmd:process-queue)
           (force-mode-line-update nil)
           (if (ascmd:process-exec-p)
               (ascmd:shell-deferred (car ascmd:process-queue))))))))
+
+(defun ascmd:window-popup-p ()
+  (and (popwin:popup-window-live-p)
+       (string-equal (buffer-name (window-buffer popwin:popup-window)) ascmd:buffer-name)))
 
 (defvar ascmd:process-queue nil)
 
