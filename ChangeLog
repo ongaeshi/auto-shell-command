@@ -1,4 +1,12 @@
-2013-04-01 00:52  ongaeshi  <ongaeshi@ongaeshi-iMac.local>
+2013-04-05 01:20  ongaeshi  <ongaeshi0621@gmail.com>
+
+        * Version 1.0.0
+        * Error popup displays at the bottom of the buffer
+        * Close '*Auto Shell Command*' window if success
+        * Add Package-Requires: popwin
+        * Change .emacs.d/init.el setting (popwin)
+
+2013-04-01 00:52  ongaeshi  <ongaeshi0621@gmail.com>
 
         * Version 0.5.1
         * Command queue to add the same command time of less than one
