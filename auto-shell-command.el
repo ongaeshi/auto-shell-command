@@ -203,15 +203,16 @@
           (if notify-start (ascmd:notify "start"))))
       ;; main
       (deferred:process-shell arg)
-      (deferred:error it (lambda (err) (setq result "failed") (display-buffer ascmd:buffer-name) err))
+      (deferred:error it (lambda (err) (setq result "failed") err))
       ;; after
       (deferred:nextc it
         (lambda (x)
           (with-current-buffer (get-buffer-create ascmd:buffer-name)
             (delete-region (point-min) (point-max))
             (insert x)
-            ;(goto-char (point-min))
-            )
+            (goto-char (point-max))
+            (if (string-equal result "failed")
+                (display-buffer ascmd:buffer-name)))
           (ascmd:notify result)
           (pop ascmd:process-queue)
           (force-mode-line-update nil)
