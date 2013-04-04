@@ -50,9 +50,9 @@
 ;; (global-set-key (kbd "C-c C-,") 'ascmd:popup)  ; Pop up '*Auto Shell Command*'
 ;; (global-set-key (kbd "C-c C-.") 'ascmd:exec)   ; Exec-command specify file name
 
-;; ;; ;; Easier to popup on errors (optional, need '(require 'popwin)')
-;; ;; (push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
-;;
+;; ;; Popup on errors
+;; (push '("*Auto Shell Command*" :height 20 :noselect t) popwin:special-display-config)
+
 ;; ;; ;; Notification of results to Growl (optional)
 ;; ;; (defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
 

@@ -36,8 +36,8 @@ auto-shell-command.el
 (global-set-key (kbd "C-c C-,") 'ascmd:popup)  ; Pop up '*Auto Shell Command*'
 (global-set-key (kbd "C-c C-.") 'ascmd:exec)   ; Exec-command specify file name
 
-;; ;; エラー時のポップアップを見やすくする (optional, '(require 'popwin)'が必要です)
-;; (push '("*Auto Shell Command*" :height 20) popwin:special-display-config)
+;; ;; エラー時のポップアップを見やすくする
+;; (push '("*Auto Shell Command*" :height 20 :noselect t) popwin:special-display-config)
 
 ;; ;; 結果の通知をGrowlで行う (optional)
 ;; (defun ascmd:notify (msg) (deferred:process-shell (format "growlnotify -m %s -t emacs" msg))))
@@ -116,4 +116,4 @@ GPLv3
 - [kiwanami/emacs-deferred](https://github.com/kiwanami/emacs-deferred)
 
 ----
-Copyright (C) 2012 ongaeshi <<ongaeshi0621@gmail.com>>
+Copyright (C) 2012, 2013 ongaeshi <<ongaeshi0621@gmail.com>>
