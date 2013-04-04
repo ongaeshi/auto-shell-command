@@ -4,7 +4,7 @@
 
 ;; Author: ongaeshi
 ;; Keywords: shell, save, async, deferred, auto
-;; Version: 0.5.1
+;; Version: 1.0.0
 ;; Package-Requires: ((deferred "20130312") (popwin "20130329"))
 
 ;; This program is free software; you can redistribute it and/or modify
