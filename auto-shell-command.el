@@ -212,12 +212,18 @@
             (insert x)
             (goto-char (point-max))
             (if (string-equal result "failed")
-                (display-buffer ascmd:buffer-name)))
+                (display-buffer ascmd:buffer-name)
+              (if (ascmd:window-popup-p) 
+                  (delete-window popwin:popup-window))))
           (ascmd:notify result)
           (pop ascmd:process-queue)
           (force-mode-line-update nil)
           (if (ascmd:process-exec-p)
               (ascmd:shell-deferred (car ascmd:process-queue))))))))
+
+(defun ascmd:window-popup-p ()
+  (and (popwin:popup-window-live-p)
+       (string-equal (buffer-name (window-buffer popwin:popup-window)) ascmd:buffer-name)))
 
 (defvar ascmd:process-queue nil)
 
