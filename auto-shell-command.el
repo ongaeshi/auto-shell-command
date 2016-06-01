@@ -204,7 +204,7 @@
           (if notify-start (ascmd:notify "start"))))
       ;; main
       (deferred:process-shell arg)
-      (deferred:error it (lambda (err) (setq result "failed") err))
+      (deferred:error it (lambda (err) (setq result "failed") (cadr err)))
       ;; after
       (deferred:nextc it
         (lambda (x)
