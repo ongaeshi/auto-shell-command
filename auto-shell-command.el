@@ -1,4 +1,4 @@
-;;; auto-shell-command.el --- Run the shell command asynchronously that you specified when you save the file. 
+;;; auto-shell-command.el --- Run the shell command asynchronously that you specified when you save the file.
 
 ;; Copyright (C) 2012 ongaeshi
 
@@ -22,7 +22,7 @@
 
 ;;; Commentary:
 
-;; Run the shell command asynchronously that you specified when you save the file. 
+;; Run the shell command asynchronously that you specified when you save the file.
 ;; And there flymake autotest, is Guard as a similar tool.
 
 ;; Feature
@@ -106,7 +106,7 @@
          (push v ascmd:setting))
         (t
          (let (path command)
-           (setq path (read-file-name "Path: " nil (buffer-file-name))) 
+           (setq path (read-file-name "Path: " nil (buffer-file-name)))
            (setq command (read-string "Command: "))
            (let ((msg (format "(ascmd:add '(\"%s\" \"%s\"))" path command)))
              (kill-new msg)
@@ -204,7 +204,7 @@
           (if notify-start (ascmd:notify "start"))))
       ;; main
       (deferred:process-shell arg)
-      (deferred:error it (lambda (err) (setq result "failed") err))
+      (deferred:error it (lambda (err) (setq result "failed") (cadr err)))
       ;; after
       (deferred:nextc it
         (lambda (x)
@@ -213,7 +213,7 @@
             (insert x)
             (if (string-equal result "failed")
                 (display-buffer ascmd:buffer-name)
-              (if (ascmd:window-popup-p) 
+              (if (ascmd:window-popup-p)
                   (delete-window popwin:popup-window)))
             (save-selected-window
               (let ((win (get-buffer-window (get-buffer-create ascmd:buffer-name))))
@@ -261,7 +261,7 @@
   (not (null ascmd:process-queue)))
 
 (defun ascmd:display-process-count ()
-  (cond ((not ascmd:active) 
+  (cond ((not ascmd:active)
          "[ascmd:stop]")
         ((ascmd:process-exec-p)
          (format "[ascmd:%d] " (ascmd:process-count)))
