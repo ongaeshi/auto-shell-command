@@ -267,7 +267,7 @@
          (format "[ascmd:%d] " (ascmd:process-count)))
         ))
 
-(add-to-list 'default-mode-line-format
+(add-to-list 'mode-line-format
              '(:eval (ascmd:display-process-count)))
 
 (provide 'auto-shell-command)
